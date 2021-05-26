@@ -1,0 +1,51 @@
+$background-light:#edf0f5;
+$background-dark:#212121;
+$background:$background-dark;
+
+$color-light:60;
+$color-dark: 240;
+$color:$color-dark;
+
+$single-space:20px;
+$large-space:100px;
+
+$card-width:59px;
+$card-height:91px;
+
+@mixin flex($direction: column, $justify: center, $align:center, $wrap:nowrap){
+	display:flex;
+	flex-direction: $direction;
+	justify-content: $justify;
+	align-items: $align;
+	flex-wrap: $wrap;
+}
+
+@mixin font($size:14px, $weight:500, $family:'Montserrat', $opacity:1, $r:$color, $g: $color, $b: $color){
+	font-size:$size;
+	font-weight:$weight;
+	font-family:$family;
+	color:rgba($r, $g, $b, 1);
+}
+
+@mixin neumorphism($background: $background, $distance: 2px, $blur: 4px){
+	box-shadow: $distance $distance $blur rgba(0,0,0,1),
+				-1*$distance -1*$distance $blur rgba(255, 255, 255, .2);
+}
+
+@mixin insetNeumorphism($background: $background, $distance: 3px, $blur: 6px){
+	box-shadow: inset $distance $distance $blur rgba(0,0,0,1),
+				inset -1*$distance -1*$distance $blur rgba(255, 255, 255, .2);
+}
+
+@mixin shadowCard($top, $clip, $background){
+	content:'';
+    display:block;
+    width:100%;
+    height:60%;
+    position:absolute;
+    left:0;
+	top:$top;
+	clip-path: $clip;
+	background: $background;
+
+}

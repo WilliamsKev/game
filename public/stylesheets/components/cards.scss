@@ -1,0 +1,37 @@
+@import '../utils/variables';
+
+.card{
+    transform-style: preserve-3d;
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+    .card-back, .card-front{
+        position:absolute;
+        width:100%;
+        height:100%;
+        background-position: center;
+        background-size: cover;
+        backface-visibility: hidden;
+        transition: transform .3s linear;
+        &::before{
+            @include shadowCard(0, polygon(0% 0%, 100% 0, 100% 66%, 0% 100%), rgba(255, 255, 255, .2));
+        }
+        &::after{
+            @include shadowCard(40%, polygon(0% 33%, 0% 100%, 100% 100%, 100% 0%), rgba(0, 0, 0, .06));
+        }
+    }
+    .card-back{
+        @include flex;
+        background-color:$background-dark;
+    }
+}
+.card[data-show=true]{
+    .card-back{
+        transform:rotateY(180deg);
+    }
+}
+.card[data-show=false]{
+    .card-front{
+        transform:rotateY(180deg);
+    }
+}

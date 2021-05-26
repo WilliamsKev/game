@@ -1,0 +1,27 @@
+@import '../utils/variables';
+
+.header{
+    @include flex(row, space-between);
+    width:100%;
+    box-shadow: 0 0 1px 0 rgba($color, $color, $color,.4);
+    background:$background;
+    position:relative;
+}
+
+.menu{
+    @include flex(row);
+    padding:$single-space;
+    margin:auto;
+    .menu-item{
+        @include flex;
+        @include font(20px);
+        margin:0 .5*$single-space;
+        border-radius:6px;
+        width:40px;
+        height:40px;
+        &[data-focus=true]{
+            @include neumorphism;
+            border-radius: 10px;
+        }
+    }
+}

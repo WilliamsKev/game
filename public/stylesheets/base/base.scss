@@ -1,0 +1,30 @@
+@import '../utils/variables';
+
+*{
+    box-sizing: border-box;
+    font-family:'Lato', sans-serif;
+}
+
+html, body{
+    min-width:100vw;
+    min-height:100vh;
+    margin:0;
+    padding:0;
+}
+body{
+    background: rgb(95,98,102);
+    background: linear-gradient(145deg, rgba(60,60,60,1) 0%, rgba(24,24,24,1) 87%);
+
+}
+
+a[href]{
+    color:unset;
+    text-decoration: none;
+}
+button{
+    outline:none;
+    border:none;
+    &:hover{
+        cursor:pointer;
+    }
+}
