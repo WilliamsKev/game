@@ -1,5 +1,6 @@
 @import '../utils/variables';
 
+
 .table{
     margin:.5*$large-space auto;
     position:relative;
@@ -23,6 +24,9 @@
         left:0;
         border: 1px solid rgba($color, $color, $color, .3);
         border-radius:6px;
+        &:nth-child(1){
+            cursor:pointer
+        }
         &:nth-child(n+3){
             @include insetNeumorphism
         }
@@ -35,17 +39,8 @@
 
 .deck-refresh{
     @include flex;
+    @include font(20px, 500, 'Montserrat', .3);
     position: absolute;
     width: 100%;
     height: 100%;
-    button{
-        @include flex;
-        @include neumorphism;
-        width:35px;
-        height:35px;
-        border-radius:50%;
-        background: none;
-        font-size: 20px;
-        color: white;
-    }
 }

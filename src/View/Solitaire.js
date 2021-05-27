@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
-import { Header } from '../Layout/Header'
-import { Card } from '../Components/Cards'
+import { Header, Toolbar } from '../Layout'
+import { Card } from '../Components'
 import { VscRefresh } from 'react-icons/vsc'
 
 class Game extends Component{
@@ -25,6 +25,13 @@ class Game extends Component{
                     type: 'ease'
                 }
             },
+            game: {
+                points: 0,
+                history: [],
+                end: false,
+                win: false
+            },
+            time: 0,
             table: null,
             cards: null,
             decks: null,
@@ -99,14 +106,25 @@ class Game extends Component{
         for(let i=51; i > 23; i--){
             setTimeout(() => {
                 let flip = (i ===51 || i === 50 || i === 48 || i === 45 || i === 41 || i === 36 || i === 30)
-                if(i > 50) this.switchCard(i, 6, flip)
-                else if(i > 48) this.switchCard(i, 7, flip)
-                else if(i > 45) this.switchCard(i, 8, flip)
-                else if(i > 41) this.switchCard(i, 9, flip)
-                else if(i > 36) this.switchCard(i, 10, flip)
-                else if(i > 30) this.switchCard(i, 11, flip)
-                else this.switchCard(i, 12, flip)
+                if(i > 50) this.switchCard(i, 6, flip, false)
+                else if(i > 48) this.switchCard(i, 7, flip, false)
+                else if(i > 45) this.switchCard(i, 8, flip, false)
+                else if(i > 41) this.switchCard(i, 9, flip, false)
+                else if(i > 36) this.switchCard(i, 10, flip, false)
+                else if(i > 30) this.switchCard(i, 11, flip, false)
+                else this.switchCard(i, 12, flip, false)
             }, i*100)
+        }
+    }
+
+    handleTimer = (stop) => {
+        var timer = setInterval(() => {
+            this.setState({
+                time: this.state.time + 1
+            })
+        }, 1000)
+        if(stop){
+            clearInterval(timer);
         }
     }
 
@@ -114,9 +132,8 @@ class Game extends Component{
         var pile = this.state.decks[newPile].pile
         var card = this.state.cards[indexCard]
         var prevCard = this.state.cards[pile[pile.length - 1]]
-        console.log(card, prevCard)
+
         if(prevCard === undefined){
-            console.log(newPile, card.value)
             if(newPile > 5){
                 if(card.value !== 13) return false
             } 
@@ -132,14 +149,21 @@ class Game extends Component{
         return true
     }
 
-    switchCard = (indexCard, newPile, flip) => {
+    switchCard = (indexCard, newPile, flip, history) => {
+
+        console.log('SWITCH CARD', indexCard, newPile, flip, history)
+
         var cards = this.state.cards
         var decks = this.state.decks
+        var game = this.state.game
         var oldPile = cards[indexCard].pile
+        var indexOldPile = decks[oldPile].pile.indexOf(indexCard)
 
         if(oldPile !== newPile){
 
-            decks[oldPile].pile.splice(decks[oldPile].pile.indexOf(indexCard), 1)
+            if(history) this.handleHistory(cards, decks, game, indexCard, oldPile, newPile, indexOldPile)
+
+            decks[oldPile].pile.splice(indexOldPile, 1)
             decks[newPile].pile.push(indexCard)
             cards[indexCard].pile = newPile
 
@@ -164,13 +188,33 @@ class Game extends Component{
         })
     }
 
+    handleHistory = (cards, decks, game, indexCard, oldPile, newPile, indexOldPile) => {
+        
+        if(!this.state.game.history.length) this.handleTimer(false)
+
+        game.history.push({time: this.state.time, indexCard: indexCard, oldPile: oldPile})
+
+        let indexPrevCard = decks[oldPile].pile[indexOldPile - 1];
+        if(indexPrevCard !== undefined){
+            console.log(indexPrevCard, cards[indexPrevCard].show)
+        }
+        if((oldPile > 5 && (indexPrevCard === undefined || !cards[indexPrevCard].show)) || (oldPile === 1 && newPile !== 0)){
+            if(newPile < 6) game.points += 10
+            else game.points += 5
+        }
+
+        this.setState({
+            game: game    
+        })
+    }
+
     handleClickCard = (index) => {
         const indexDeck = this.state.cards[index].pile
         var pile = this.state.decks[indexDeck].pile
         if(indexDeck > 0) return false
         for(let i = 0; i < Math.min(3, pile.length); i++){
             setTimeout(() => {
-                this.switchCard(pile[pile.length - 1], 1, true, i)
+                this.switchCard(pile[pile.length - 1], 1, true, true)
             }, i*100)
         }
     }
@@ -182,7 +226,6 @@ class Game extends Component{
             let space = (this.state.decks[1].pile.indexOf(indexCard) + length - this.state.decks[1].pile.length)
             space = Math.max(0, space)
             cards[indexCard].position.x = this.state.decks[1].position.x + this.state.card.space.x * space
-            
         })
         this.setState({
             cards: cards
@@ -190,6 +233,7 @@ class Game extends Component{
     }
 
     handleDragStart = (index) => {
+
         let indexDeck = this.state.cards[index].pile
         let pile = this.state.decks[indexDeck].pile
         if(indexDeck === 0 || (indexDeck < 6 && pile[pile.length - 1] !== index) || !this.state.cards[index].show) return false
@@ -222,10 +266,10 @@ class Game extends Component{
         var indexDeck = (newDeck < 0) ? this.state.cards[index].pile : newDeck
 
        
-        this.switchCard(index, indexDeck, false)
+        this.switchCard(index, indexDeck, false, !(newDeck < 0))
         this.setCardDrag(index, -1)
         this.state.followCards.forEach(indexCard => {
-            this.switchCard(indexCard, indexDeck, false)
+            this.switchCard(indexCard, indexDeck, false, !(newDeck < 0))
             this.setCardDrag(indexCard, -1)
         })
         this.setCardFollow(-1)
@@ -269,7 +313,7 @@ class Game extends Component{
             if(this.state.decks[0].pile.length === 0){
                 this.state.decks[1].pile.reverse().forEach(indexCard => {
                     setTimeout(() => {
-                        this.switchCard(indexCard, 0, true)
+                        this.switchCard(indexCard, 0, true, true)
                     }, 20)
                 })
             }
@@ -280,7 +324,8 @@ class Game extends Component{
         return(
             <React.Fragment>
                 <Header/>
-
+                
+                <Toolbar time={this.state.time} points={this.state.game.points} />
                 <section className="table" 
                     style={{
                         width: `${7 * (this.state.card.size.x * this.state.card.scale + 2 * this.state.card.margin)}px`
@@ -298,9 +343,7 @@ class Game extends Component{
                                 {
                                     index === 0 && 
                                     <div className="deck-refresh">
-                                        <button>
-                                            <VscRefresh/>
-                                        </button>
+                                        <VscRefresh/>
                                     </div>
                                 }    
                                 </div>
