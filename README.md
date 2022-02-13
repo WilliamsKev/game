@@ -1,1 +1,1 @@
-# A few games in React
+# Jeu de solitaire en React.js
