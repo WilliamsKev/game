@@ -2,13 +2,14 @@
 
 
 .table{
-    margin:.5*$large-space auto;
+    margin: 0 auto;
+    padding: .5*$large-space 0;
     position:relative;
+    height: calc(100vh - 80px);
 }
 
 .container-cards{
     position:fixed;
-    width:100%;
     .wrapper-card{
         position: absolute;
         top:0;
@@ -22,17 +23,18 @@
         position:absolute;
         top:0;
         left:0;
-        border: 1px solid rgba($color, $color, $color, .3);
+        border: 1px solid rgba($color, $color, $color, .18);
         border-radius:6px;
         &:nth-child(1){
             cursor:pointer
         }
         &:nth-child(n+3){
-            @include insetNeumorphism
+            @include insetNeumorphism;
+            border:none;
         }
         &:nth-child(n+7){
             box-shadow: none;
-            border: 1px solid rgba($color, $color, $color, .3);
+            border: 1px solid rgba($color, $color, $color, .18);
         }
     }
 }
